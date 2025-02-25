@@ -18,4 +18,4 @@ const patientSchema = new mongoose.Schema({
   ],
 },{ timestamps: { createdAt: 'createdAt' } });
 
-module.exports = mongoose.model("Patient", patientSchema);
+export default mongoose.model("Patient", patientSchema);

@@ -1,18 +1,21 @@
 import mongoose from "mongoose";
 
-const reportSchema = new mongoose.Schema({
+const reportSchema = new mongoose.Schema(
+  {
     link: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     name: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     patientId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Patient",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Patient",
     },
-}, { timestamps: { createdAt: 'createdAt' } });
+  },
+  { timestamps: { createdAt: "createdAt" } }
+);
 
-module.exports = mongoose.model("Report", reportSchema);
+export default mongoose.model("Report", reportSchema);

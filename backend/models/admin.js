@@ -38,4 +38,4 @@ const adminSchema = new mongoose.Schema(
   { timestamps: { createdAt: "createdAt" } }
 );
 
-module.exports = mongoose.model("Admin", adminSchema);
+export default mongoose.model("Admin", adminSchema);

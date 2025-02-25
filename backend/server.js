@@ -2,15 +2,22 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import express from "express";
+import cookieParser from "cookie-parser";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 import { connectDB } from "./db/db.js";
 
-app.get("/test", (req, res) => {
-  res.json({ success: true, meggase: "Testing" });
-});
+// MiddleWares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+// ROutes
+import adminRoute from "./routes/admin.js";
+
+app.use("/admin", adminRoute);
 
 app.listen(PORT, () => {
   connectDB();

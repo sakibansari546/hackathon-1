@@ -27,4 +27,4 @@ const staffSchema = new mongoose.Schema({
   ],
 },{ timestamps: { createdAt: 'createdAt' } });
 
-module.exports = mongoose.model("Staff", staffSchema);
+export default mongoose.model("Staff", staffSchema);
