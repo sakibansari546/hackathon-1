@@ -9,7 +9,7 @@ import {
   createDepartment,
   createStaff,
 } from "../controllers/admin.js";
-import { authenticateAdmin } from "../middlewares/auth-admin.js";
+import { authenticateAdmin } from "../middlewares/auth-check.js";
 
 router.post("/signup", adminSignup);
 router.post("/login", adminLogin);

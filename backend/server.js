@@ -16,8 +16,10 @@ app.use(cookieParser());
 
 // ROutes
 import adminRoute from "./routes/admin.js";
+import staffRoute from "./routes/staff.js";
 
 app.use("/admin", adminRoute);
+app.use("/staff", staffRoute);
 
 app.listen(PORT, () => {
   connectDB();
