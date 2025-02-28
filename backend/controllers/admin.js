@@ -49,7 +49,7 @@ export const adminSignup = async (req, res) => {
     return res.status(201).json({
       success: true,
       message: "Admin created successfully",
-      admin: {
+      data: {
         id: newAdmin._id,
         name: newAdmin.name,
         email: newAdmin.email,
@@ -103,7 +103,7 @@ export const adminLogin = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Logged in successfully",
-      admin: {
+      data: {
         id: admin._id,
         name: admin.name,
         email: admin.email,
@@ -147,9 +147,9 @@ export const checkAdminAuth = async (req, res) => {
       path: "departments",
       populate: {
         path: "staffs",
-        // populate: {
-        //   path: "patients",
-        // },
+        populate: {
+          path: "patients",
+        },
       },
     });
 
@@ -163,7 +163,7 @@ export const checkAdminAuth = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Admin found successfully.",
-      admin,
+      data: admin,
     });
   } catch (error) {
     console.error(error);
