@@ -70,7 +70,7 @@ const Login = () => {
         <option value="user" className="p-2">I am a Patient</option>
         <option value="admin" className="p-2">I am a Staff</option>
       </select>
-      {/* <input
+      <input
         onChange={handleChange}
         type="email"
         name="email"
@@ -90,7 +90,7 @@ const Login = () => {
         disabled={loading}
       >
         {loading ? "Logging in..." : "Login"}
-      </button> */}<Patient />
+      </button>
     </form>
     
   </div>
