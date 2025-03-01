@@ -9,6 +9,7 @@ import Signup from "./admin/Signup";
 import { setAdminData } from "./store/slice/admin";
 import AdminPage from "./admin/adminPage";
 import Login from "./admin/Login";
+import AdminDepartments from "./admin/AdminDepartments";
 
 function ProtectedRoute({ children }) {
   const { data } = useSelector((state) => state.admin);
@@ -64,6 +65,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AdminPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/:adminId/departments"
+          element={
+            <ProtectedRoute>
+              <AdminDepartments />
             </ProtectedRoute>
           }
         />
