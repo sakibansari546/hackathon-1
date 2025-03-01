@@ -21,13 +21,14 @@ app.use(
   })
 );
 
-
 // ROutes
 import adminRoute from "./routes/admin.js";
 import staffRoute from "./routes/staff.js";
+import patientRoute from "./routes/patient.js";
 
 app.use("/admin", adminRoute);
 app.use("/staff", staffRoute);
+app.use("/patient", patientRoute);
 
 app.listen(PORT, () => {
   connectDB();
