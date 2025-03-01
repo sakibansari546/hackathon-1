@@ -60,36 +60,36 @@ const AdminPage = () => {
     <div className="flex flex-col h-screen bg-slate-50">
       <header className="p-4 bg-white shadow-sm">
         <div className="container mx-auto">
-          <h1 className="text-2xl font-semibold text-teal-600">MedVault</h1>
+          <h1 className="text-2xl font-semibold text-green-500">MedVault</h1>
         </div>
       </header>
 
       <div className="container mx-auto flex-1 p-4">
-        <div className="max-w-md mx-auto border border-slate-200 rounded-lg p-4 bg-slate-50 shadow-sm">
+        <div className="max-w-md mx-auto border border-slate-200 h-[100%] rounded-lg p-4 bg-slate-50 shadow-sm">
           <div className="space-y-3">
-            <button className="w-full py-3 px-4 bg-green-700 text-white rounded-md text-left">
+            <button className="w-full h-[160px] py-3 relative px-4 bg-green-900 text-white rounded-md text-left">
               <div
                 onClick={() => setShowAddDepartment(true)}
                 className="flex justify-between items-center"
               >
-                <span className="text-lg font-medium">Add Departments</span>
-                <span className="rounded-full bg-white w-6 h-6 flex items-center justify-center text-green-700">
+                <span className="text-3xl w-[50px] leading-7 absolute bottom-[10%] font-semibold ">Add Departments</span>
+                <span className="rounded-full bg-white absolute top-[10%] right-[5%] w-6 h-6 flex items-center justify-center text-green-700">
                   +
                 </span>
               </div>
             </button>
 
             <button
-              className="w-full py-3 px-4 bg-red-50 text-red-600 border border-red-200 rounded-md text-left"
+              className="w-full py-3 px-4 bg-red-50 text-red-600 border border-red-500 rounded-md text-left"
               onClick={handleLogout}
             >
-              <span className="text-lg font-medium">Exit</span>
+              <span className="text-2xl font-semibold ">Exit</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Add Department Popup */}
+      {/* Add Department Popup */}``
       {showAddDepartment && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg w-80 p-6 mx-4">
