@@ -1,4 +1,4 @@
-import { Routes, Route, data, useNavigate } from "react-router";
+import { Routes, Route, useNavigate } from "react-router";
 import { useEffect } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
