@@ -186,9 +186,16 @@ export const createDepartment = async (req, res) => {
         message: "Name must be at least 3 characters long",
       });
     }
-    // const objectAdminId = mongoose.Types.ObjectId(adminId);
-    const admin = await Admin.findById(adminId);
 
+    // 2. Find the Admin
+    if (!mongoose.Types.ObjectId.isValid(adminId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Admin ID",
+      });
+    }
+
+    const admin = await Admin.findById(adminId);
     if (!admin) {
       return res.status(404).json({
         success: false,
@@ -196,14 +203,27 @@ export const createDepartment = async (req, res) => {
       });
     }
 
+    // 3. Create the new Department
     const newDepartment = await Department.create({ name });
+
+    // 4. Link Department to the Admin
     admin.departments.push(newDepartment._id);
     await admin.save();
 
+    // 5. Re-fetch the Admin with populated fields
+    //    - This example populates all departments,
+    //      and for each department, we also populate "staffs" and "patients"
+    const updatedAdmin = await Admin.findById(admin._id).populate({
+      path: "departments",
+      populate: [{ path: "staffs" }, { path: "patients" }],
+    });
+    // If your Admin schema also directly references staffs or patients arrays, you can populate them too:
+    // .populate("staffs"
+    // .populate("patients")
     return res.status(201).json({
       success: true,
       message: "Department created successfully",
-      department: newDepartment,
+      data: updatedAdmin,
     });
   } catch (error) {
     console.error(error);

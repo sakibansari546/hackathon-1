@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router";
+import { Routes, Route, data, useNavigate } from "react-router";
 import { useEffect } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,6 +24,7 @@ function ProtectedRoute({ children }) {
 }
 
 function App() {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const checkAdminAuth = async () => {
@@ -46,6 +47,11 @@ function App() {
   };
   useEffect(() => {
     checkAdminAuth();
+    if (data) {
+      navigate(`/admin/${data._id}`);
+    } else {
+      navigate(`/admin/login`);
+    }
   }, []);
 
   return (

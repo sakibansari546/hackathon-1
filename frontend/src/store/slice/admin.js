@@ -12,12 +12,16 @@ export const adminSlice = createSlice({
     setAdminData: (state, action) => {
       state.data = action.payload;
     },
+    createDepartment: (state, action) => {
+      state.data.department.push(action.payload);
+    },
     clearAdminData: (state) => {
       state.data = null;
     },
   },
 });
 
-export const { setAdminData, clearAdminData } = adminSlice.actions;
+export const { setAdminData, clearAdminData, createDepartment } =
+  adminSlice.actions;
 
 export default adminSlice.reducer;
