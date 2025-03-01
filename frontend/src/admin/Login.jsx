@@ -4,6 +4,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { setAdminData } from "../store/slice/admin";
 import { Navigate, useNavigate } from "react-router";
+import Patient from "./Patient";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -69,7 +70,7 @@ const Login = () => {
         <option value="user" className="p-2">I am a Patient</option>
         <option value="admin" className="p-2">I am a Staff</option>
       </select>
-      <input
+      {/* <input
         onChange={handleChange}
         type="email"
         name="email"
@@ -89,8 +90,9 @@ const Login = () => {
         disabled={loading}
       >
         {loading ? "Logging in..." : "Login"}
-      </button>
+      </button> */}<Patient />
     </form>
+    
   </div>
 </div>
 
