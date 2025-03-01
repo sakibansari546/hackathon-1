@@ -48,7 +48,6 @@ export const checkPatientAuth = async (req, res) => {
   try {
     // Find the patient by ID from the token payload (req.patientId)
     // and populate any referenced fields you want, for example "reports".
-    console.log(req.patientId);
 
     const patient = await Patient.findById(req.patientId).populate("reports");
 
@@ -63,6 +62,24 @@ export const checkPatientAuth = async (req, res) => {
       success: true,
       message: "Patient found successfully.",
       data: patient,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+    });
+  }
+};
+
+export const patientLogout = (req, res) => {
+  try {
+    // Clear the token cookie
+    res.clearCookie("token");
+
+    return res.status(200).json({
+      success: true,
+      message: "Patient logged out successfully!",
     });
   } catch (error) {
     console.error(error);

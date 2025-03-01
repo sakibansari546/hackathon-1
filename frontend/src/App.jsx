@@ -16,6 +16,10 @@ import { setStaffData } from "./store/slice/staff";
 import StaffPage from "./staff/StaffPage";
 import StaffPatient from "./staff/StaffPatient";
 import CreateReport from "./staff/CreateReport";
+import PatientPage from "./patient/PatientPage";
+import PatientLogin from "./patient/patientLogin";
+import { setPatientData } from "./store/slice/patient";
+import PatientReports from "./patient/PatientReports";
 
 // Protected route for Admin pages
 function ProtectedRoute({ children }) {
@@ -42,8 +46,23 @@ function ProtectedStaffRoute({ children }) {
   return children;
 }
 
+function ProtectedPatientRoute({ children }) {
+  const { data } = useSelector((state) => state.patient);
+  // console.log("ProtectedStaffRoute - staffData:", staffData);
+
+  // Check if staff data is not available or missing the unique identifier
+  if (!data || !data._id) {
+    return <Navigate to="/patient/login" />;
+  }
+
+  return children;
+}
+
 function App() {
   const dispatch = useDispatch();
+
+  const { data: patientData } = useSelector((state) => state.patient);
+  console.log(patientData);
 
   const checkAdminAuth = async () => {
     try {
@@ -75,7 +94,25 @@ function App() {
     }
   };
 
+  const checkPatientAuth = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/patient/check-auth`,
+        { withCredentials: true }
+      );
+      if (res.data.success) {
+        toast.success("Auth success fully");
+        dispatch(setPatientData(res.data.data));
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Auth Faild");
+      dispatch(setPatientData(null));
+    }
+  };
+
   useEffect(() => {
+    checkPatientAuth();
     checkStaffAuth();
     checkAdminAuth();
   }, []);
@@ -136,6 +173,27 @@ function App() {
             <ProtectedStaffRoute>
               <CreateReport />
             </ProtectedStaffRoute>
+          }
+        />
+
+        {/* Patient Routes */}
+        <Route path="/patient/login" element={<PatientLogin />} />
+
+        <Route
+          path="/patient/:patientId"
+          element={
+            <ProtectedPatientRoute>
+              <PatientPage />
+            </ProtectedPatientRoute>
+          }
+        />
+
+        <Route
+          path="/patient/:patientId/reports"
+          element={
+            <ProtectedPatientRoute>
+              <PatientReports />
+            </ProtectedPatientRoute>
           }
         />
       </Routes>
