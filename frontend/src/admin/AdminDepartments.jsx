@@ -7,6 +7,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setAdminData } from "../store/slice/admin";
 import toast from "react-hot-toast";
+import { Link } from "react-router";
 
 const AdminDepartments = () => {
   const { data } = useSelector((state) => state.admin);
@@ -66,14 +67,16 @@ const AdminDepartments = () => {
         </div>
 
         {/* Departments List */}
-        <div className="space-y-2 mb-6">
+        <div className="space-y-2 mb-6 h-[65vh] overflow-y-auto">
           {filteredDepartments.map((department) => (
-            <button
+            <Link
+              to={`/admin/${data._id}/${department._id}/staffs`}
               key={department._id}
-              className="w-full py-3 px-4 bg-green-800 text-white rounded-md text-left hover:bg-green-700 transition-colors"
             >
-              {department.name}
-            </button>
+              <button className="w-full py-3 my-1 px-4 bg-green-800 text-white rounded-md text-left hover:bg-green-700 transition-colors">
+                {department.name}
+              </button>
+            </Link>
           ))}
         </div>
 

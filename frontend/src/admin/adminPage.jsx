@@ -70,10 +70,7 @@ const AdminPage = () => {
               onClick={() => navigate(`/admin/${data._id}/departments`)}
               className="w-full h-[160px] py-3 relative px-4 bg-green-900 text-white rounded-md text-left"
             >
-              <div
-                // onClick={() => setShowAddDepartment(true)}
-                className="flex justify-between items-center"
-              >
+              <div className="flex justify-between items-center">
                 <span className="text-3xl w-[50px] leading-7 absolute bottom-[10%] font-semibold ">
                   Add Departments
                 </span>
@@ -92,46 +89,6 @@ const AdminPage = () => {
           </div>
         </div>
       </div>
-      {/* Add Department Popup``
-      {showAddDepartment && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg w-80 p-6 mx-4">
-            <h2 className="text-center text-xl font-medium mb-6">
-              add department
-            </h2>
-
-            <form onSubmit={handleAddDepartment}>
-              <div className="mb-4">
-                <label htmlFor="departmentName" className="block text-sm mb-1">
-                  department name
-                </label>
-                <input
-                  type="text"
-                  id="departmentName"
-                  value={departmentName}
-                  onChange={(e) => setDepartmentName(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-full mt-2"
-              >
-                add department
-              </button>
-            </form>
-
-            <button
-              onClick={() => setShowAddDepartment(false)}
-              className="absolute text-2xl top-2 right-2 text-gray-500 hover:text-gray-700"
-              aria-label="Close"
-            >
-              ×
-            </button>
-          </div>
-        </div>
-      )} */}
       <Outlet />
     </div>
   );

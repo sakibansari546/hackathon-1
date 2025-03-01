@@ -265,6 +265,7 @@ export const createStaff = async (req, res) => {
         message: "Invalid departmentId.",
       });
     }
+
     // 7. Link Staff to the Department
     const department = await Department.findById(departmentId);
     if (!department) {
@@ -283,7 +284,7 @@ export const createStaff = async (req, res) => {
       });
     }
 
-    // 4. Generate a unique loginId (8 random bytes in hex format)
+    // 4. Generate a unique loginId (6 random bytes in hex format)
     const loginId = crypto.randomBytes(3).toString("hex");
 
     // 5. Create the new Staff
@@ -300,20 +301,26 @@ export const createStaff = async (req, res) => {
     department.staffs.push(newStaff._id);
     await department.save();
 
+    // Fetch the updated admin data with populated departments and staffs
+    const updatedAdmin = await Admin.findById(adminId).populate({
+      path: "departments",
+      populate: { path: "staffs" },
+    });
+
     // Send Email
     const mailInfo = {
-      name: name,
-      email: email,
+      name,
+      email,
       departmentName: department.name,
       loginId: newStaff.loginId,
     };
     sendStaffLoginInfo(email, mailInfo);
 
-    // 8. Return success response
+    // 8. Return success response with the full updated admin data
     return res.status(201).json({
       success: true,
       message: "Staff created successfully",
-      staff: newStaff,
+      data: updatedAdmin,
     });
   } catch (error) {
     console.error(error);
