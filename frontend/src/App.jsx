@@ -8,7 +8,7 @@ import toast, { Toaster } from "react-hot-toast";
 import Signup from "./admin/Signup";
 import { setAdminData } from "./store/slice/admin";
 import AdminPage from "./admin/adminPage";
-import Login from "./admin/login";
+import Login from "./admin/Login";
 
 function ProtectedRoute({ children }) {
   const { data } = useSelector((state) => state.admin);
