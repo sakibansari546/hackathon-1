@@ -3,6 +3,11 @@ import Department from "../models/department.js";
 import Staff from "../models/staff.js";
 import Patient from "../models/paitent.js";
 
+import Report from "../models/report.js";
+import PDFDocument from "pdfkit";
+import cloudinary from "../utils/cloudinary.js";
+import streamifier from "streamifier";
+
 import crypto from "crypto";
 
 import { generateTokenAndSetCookie } from "../utils/genrateTokenAndSetCoookie.js";
@@ -36,6 +41,7 @@ export const staffLogin = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Login success fully!",
+      data: existStaff,
     });
   } catch (error) {
     console.error(error);
@@ -70,22 +76,28 @@ export const staffLogout = async (req, res) => {
 
 export const checkStaffAuth = async (req, res) => {
   try {
+    // 1) Find the staff by ID
+    // 2) Populate departments (if staff.departments is an array)
+    // 3) Populate patients (if staff.patients is an array)
+    // 4) Nested populate each patient's reports
     const staff = await Staff.findById(req.staffId).populate({
-      path: "departments",
       path: "patients",
+      populate: {
+        path: "reports",
+      },
     });
 
     if (!staff) {
       return res.status(404).json({
         success: false,
-        message: "Satff not found in the database.",
+        message: "Staff not found in the database.",
       });
     }
 
     return res.status(200).json({
       success: true,
       message: "Staff found successfully.",
-      staff,
+      data: staff,
     });
   } catch (error) {
     console.error(error);
@@ -104,54 +116,60 @@ export const createPatient = async (req, res) => {
     if (!name || !email || !departmentId || !staffId) {
       return res.status(400).json({
         success: false,
-        message: "name and email i required!",
+        message: "name, email, departmentId, and staffId are required!",
       });
     }
 
     const existPatient = await Patient.findOne({ email });
     if (existPatient) {
       return res
-        .status(401)
-        .json({ success: false, message: "This patient is already exist!" });
+        .status(400)
+        .json({ success: false, message: "This patient already exists!" });
     }
 
     const department = await Department.findById(departmentId);
     if (!department) {
       return res
         .status(404)
-        .json({ success: false, message: "department is not found!" });
+        .json({ success: false, message: "Department not found!" });
     }
 
     const staff = await Staff.findById(staffId);
     if (!staff) {
       return res
         .status(404)
-        .json({ success: false, message: "staff is not found!" });
+        .json({ success: false, message: "Staff not found!" });
     }
 
-    // 4. Generate a unique loginId (8 random bytes in hex format)
+    // Generate a unique loginId
     const loginId = crypto.randomBytes(3).toString("hex");
-    console.log(loginId);
+
+    // Create new patient
     const newPatient = await Patient.create({
       name,
       email,
       loginId,
     });
 
+    // Link patient to department & staff
     department.patients.push(newPatient._id);
     staff.patients.push(newPatient._id);
-    Promise.all([department.save(), staff.save()]);
+    await department.save();
+    await staff.save();
 
-    const info = {
+    // Optionally send an email with login info
+    sendPatientLoginInfo(newPatient.email, {
       name: newPatient.name,
       loginId: newPatient.loginId,
-    };
-    sendPatientLoginInfo(newPatient.email, info);
+    });
+
+    // Retrieve updated staff with populated patients
+    const updatedStaff = await Staff.findById(staffId).populate("patients");
 
     return res.status(200).json({
       success: true,
-      message: "Patient created success fully!",
-      newPatient,
+      message: "Patient created successfully!",
+      data: updatedStaff,
     });
   } catch (error) {
     console.error(error);
@@ -159,6 +177,101 @@ export const createPatient = async (req, res) => {
       success: false,
       message: "Server error. Please try again later.",
     });
-    s;
+  }
+};
+
+export const createPDFReport = async (req, res) => {
+  try {
+    const { patientId } = req.params; // Only patientId
+    const { name, age, sex, medicines } = req.body;
+
+    // 1) Validate patient
+    const patient = await Patient.findById(patientId);
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        message: "Patient not found.",
+      });
+    }
+
+    // 2) Generate PDF in-memory using pdfkit
+    const doc = new PDFDocument();
+    const buffers = [];
+
+    doc.on("data", (chunk) => buffers.push(chunk));
+    doc.on("end", async () => {
+      const pdfData = Buffer.concat(buffers);
+
+      // 3) Upload PDF to Cloudinary
+      let uploadResult;
+      try {
+        uploadResult = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            {
+              resource_type: "raw",
+              folder: "pdf_reports",
+            },
+            (error, result) => {
+              if (error) return reject(error);
+              resolve(result);
+            }
+          );
+          streamifier.createReadStream(pdfData).pipe(uploadStream);
+        });
+      } catch (error) {
+        console.error("Cloudinary upload error:", error);
+        return res.status(500).json({
+          success: false,
+          message: "Error uploading PDF to Cloudinary",
+        });
+      }
+
+      // 4) Create new Report doc
+      const newReport = await Report.create({
+        link: uploadResult.secure_url,
+        name: `Report for ${name}`,
+        patientId: patient._id,
+      });
+
+      // 5) Push the report into patient's "reports"
+      patient.reports.push(newReport._id);
+      await patient.save();
+
+      // 6) Return the updated patient
+      const updatedPatient = await Patient.findById(patientId).populate(
+        "reports"
+      );
+
+      return res.status(201).json({
+        success: true,
+        message: "PDF created & uploaded successfully!",
+        data: updatedPatient,
+      });
+    });
+
+    // 7) Fill PDF content
+    doc.fontSize(20).text("Medical Report", { align: "center" });
+    doc.moveDown();
+    doc.fontSize(14).text(`Name: ${name}`);
+    doc.text(`Age: ${age}`);
+    doc.text(`Sex: ${sex}`);
+    doc.moveDown();
+
+    doc.text("Medicines:", { underline: true });
+    medicines.forEach((m, i) => {
+      doc.text(
+        `${i + 1}. Name: ${m.medicineName}, Dosage: ${m.dosage}, Instruction: ${
+          m.instruction
+        }`
+      );
+    });
+
+    doc.end();
+  } catch (error) {
+    console.error("createPDFReport error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+    });
   }
 };

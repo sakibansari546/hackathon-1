@@ -4,6 +4,7 @@ const router = express.Router();
 import {
   checkStaffAuth,
   createPatient,
+  createPDFReport,
   staffLogin,
   staffLogout,
 } from "../controllers/staff.js";
@@ -18,5 +19,7 @@ router.post(
   authenticateStaff,
   createPatient
 );
+
+router.post("/:staffId/:patientId/create-pdf-report", createPDFReport);
 
 export default router;
