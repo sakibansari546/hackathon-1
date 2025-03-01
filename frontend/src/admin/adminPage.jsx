@@ -45,12 +45,9 @@ const AdminPage = () => {
       );
 
       if (res.data.success) {
-        console.log(res.data.department);
-
         toast.success("Department added successfully!");
         setDepartmentName("");
-        dispatch(createDepartment(res.data.department));
-        console.log(res.data.department);
+        dispatch(setAdminData(res.data.data));
         setShowAddDepartment(false);
       }
     } catch (error) {

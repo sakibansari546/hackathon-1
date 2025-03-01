@@ -24,9 +24,10 @@ function ProtectedRoute({ children }) {
 }
 
 function App() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const { data } = useSelector((state) => state.admin);
+  console.log(data);
   const checkAdminAuth = async () => {
     try {
       const res = await axios.get(
@@ -47,11 +48,6 @@ function App() {
   };
   useEffect(() => {
     checkAdminAuth();
-    if (data) {
-      navigate(`/admin/${data._id}`);
-    } else {
-      navigate(`/admin/login`);
-    }
   }, []);
 
   return (

@@ -15,7 +15,6 @@ router.post("/signup", adminSignup);
 router.post("/login", adminLogin);
 router.post("/logout", adminLogout);
 
-
 router.get("/check-auth", authenticateAdmin, checkAdminAuth);
 
 router.post("/:adminId/create-department", authenticateAdmin, createDepartment);
